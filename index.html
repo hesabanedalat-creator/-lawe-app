@@ -1,20 +1,107 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ثبت‌نام در سامانه LAW‑E</title>
-  <script type="module">
-    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ثبت نام در سامانه Lawe.ir</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f5f5f5;
+      padding: 20px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .container {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 4px;
+      font-weight: 600;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      margin-top: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #message {
+      text-align: center;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>فرم ثبت‌نام Lawe.ir</h2>
+    <form id="signupForm">
+      <label for="name">نام:</label>
+      <input type="text" id="name" placeholder="نام کامل" required />
 
-    // ⚙️ مقدارهای واقعی پروژه را از Supabase Dashboard بگیر
-    const SUPABASE_URL = 'https://exwuvdwyavvxueadmjok.supabase.co
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI';
+      <label for="email">ایمیل:</label>
+      <input type="email" id="email" placeholder="example@email.com" required />
 
-    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      <label for="password">رمز عبور:</label>
+      <input type="password" id="password" placeholder="رمز عبور" required />
+
+      <label for="language">زبان مورد نظر:</label>
+      <select id="language">
+        <option value="fa">فارسی</option>
+        <option value="en">English</option>
+        <option value="ar">العربية</option>
+      </select>
+
+      <label for="currency">واحد پول:</label>
+      <select id="currency">
+        <option value="IRR">﷼ ریال</option>
+        <option value="USD">$ دلار</option>
+        <option value="EUR">€ یورو</option>
+      </select>
+
+      <button type="submit">ثبت‌نام</button>
+      <div id="message"></div>
+    </form>
+  </div>
+
+  <!-- اتصال Supabase -->
+  <script src="https://esm.sh/@supabase/supabase-js@2"></script>
+  <script>
+    // آدرس و کلید پروژه‌ت در Supabase
+    const SUPABASE_URL = 'https://exwuvdwyavvxueadmjok.supabase.co';
+    const SUPABASE_ANON_KEY = '🔑 اینجا کلید anon خودت از داشبورد Supabase بذار';
+
+    const { createClient } = supabase;
+    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     async function signupUser(event) {
       event.preventDefault();
+      const message = document.getElementById('message');
+      message.textContent = 'در حال ارسال...';
 
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -22,18 +109,31 @@
       const language = document.getElementById('language').value;
       const currency = document.getElementById('currency').value;
 
-      // درج داده در جدول app_users
-      const { data, error } = await supabase
-        .from('app_users')
-        .insert([
-          {
-            name,
-            email,
-            password,
-            language_preference: language,
-            currency_preference: currency,
-          },
-        ]);
+      try {
+        const { data, error } = await client
+          .from('app_users')
+          .insert([
+            { name, email, password, language_preference: language, currency_preference: currency },
+          ]);
+
+        if (error) {
+          message.textContent = '❌ خطا: ' + error.message;
+          console.error(error);
+        } else {
+          message.textContent = '✅ ثبت‌نام موفقیت‌آمیز بود!';
+          console.log('DATA:', data);
+          document.getElementById('signupForm').reset();
+        }
+      } catch (err) {
+        message.textContent = '⛔ خطا در درخواست: ' + err.message;
+        console.error(err);
+      }
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', signupUser);
+  </script>
+</body>
+</html>
 
       const message = document.getElementById('message');
       if (error) {
