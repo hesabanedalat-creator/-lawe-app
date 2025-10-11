@@ -3,30 +3,112 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>سامانه LAW-E</title>
+  <title>ثبت‌نام در سامانه LAW‑E</title>
+  <script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    // ⚙️ مقدارهای واقعی پروژه را از Supabase Dashboard بگیر
+    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    async function signupUser(event) {
+      event.preventDefault();
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const language = document.getElementById('language').value;
+      const currency = document.getElementById('currency').value;
+
+      // درج داده در جدول app_users
+      const { data, error } = await supabase
+        .from('app_users')
+        .insert([
+          {
+            name,
+            email,
+            password,
+            language_preference: language,
+            currency_preference: currency,
+          },
+        ]);
+
+      const message = document.getElementById('message');
+      if (error) {
+        message.textContent = '❌ خطا در ثبت‌نام: ' + error.message;
+      } else {
+        message.textContent = '✅ ثبت‌نام با موفقیت انجام شد!';
+        document.getElementById('signupForm').reset();
+      }
+    }
+
+    window.signupUser = signupUser;
+  </script>
+
   <style>
     body {
       font-family: sans-serif;
-      background: #f8f9fa;
+      background: #f3f4f6;
       color: #333;
       text-align: center;
-      margin: 50px auto;
+      margin: 40px auto;
     }
-    h1 { color: #0077cc; }
-    .box {
-      background: white;
-      border-radius: 8px;
+
+    form {
+      background: #fff;
       padding: 20px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      border-radius: 8px;
       display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 300px;
     }
+
+    input, select {
+      display: block;
+      margin: 10px auto;
+      padding: 8px;
+      width: 90%;
+    }
+
+    button {
+      background: #0077cc;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #message { margin-top: 15px; font-size: 14px; }
   </style>
 </head>
+
 <body>
-  <div class="box">
-    <h1>سامانه یکپارچه حقوقی–مالی LAW‑E</h1>
-    <p>خوش آمدید! این صفحه‌ی اصلی نسخه‌ی آزمایشی سامانه است.</p>
-    <p><a href="#">ورود</a> | <a href="#">ثبت‌نام</a></p>
-  </div>
+  <h1>ثبت‌نام در LAW‑E</h1>
+  <form id="signupForm" onsubmit="signupUser(event)">
+    <input id="name" type="text" placeholder="نام" required />
+    <input id="email" type="email" placeholder="ایمیل" required />
+    <input id="password" type="password" placeholder="رمز عبور" required />
+
+    <select id="language">
+      <option value="fa">فارسی</option>
+      <option value="en">English</option>
+      <option value="ar">العربية</option>
+      <option value="tr">Türkçe</option>
+    </select>
+
+    <select id="currency">
+      <option value="IRR">ریال ایران (IRR)</option>
+      <option value="USD">دلار آمریکا (USD)</option>
+      <option value="EUR">یورو (EUR)</option>
+      <option value="AED">درهم امارات (AED)</option>
+      <option value="TRY">لیر ترکیه (TRY)</option>
+    </select>
+
+    <button type="submit">ثبت‌نام</button>
+  </form>
+  <p id="message"></p>
 </body>
 </html>
