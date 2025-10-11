@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ثبت‌نام Lawe App</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fafafa;
+      padding: 20px;
+      text-align: center;
+    }
+    form {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ddd;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+    input, select, button {
+      display: block;
+      width: 100%;
+      margin: 10px 0;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background: #007bff;
+      color: #fff;
+      border: none;
+    }
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>فرم ثبت‌نام Lawe</h2>
+  <form id="signupForm">
+    <input type="text" id="name" placeholder="نام کامل">
+    <input type="email" id="email" placeholder="ایمیل">
+    <select id="language">
+      <option value="fa">فارسی</option>
+      <option value="en">English</option>
+    </select>
+    <select id="currency">
+      <option value="IRR">ریال</option>
+      <option value="USD">دلار</option>
+    </select>
+    <button type="submit">ثبت‌نام</button>
+  </form>
+  <div id="status"></div>
+
+  <!-- اتصال به Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2.45.2/dist/umd/supabase.min.js"></script>
+  <script>
+    const SUPABASE_URL = "https://exwuvdwyavvxueadmjok.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI";
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const form = document.getElementById('signupForm');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      status.textContent = '⏳ در حال ارسال به Supabase...';
+      try {
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const language = document.getElementById('language').value;
+        const currency = document.getElementById('currency').value;
+
+        const { data, error } = await client
+          .from('app_users')
+          .insert([{ name, email, language, currency }]);
+
+        if (error) {
+          status.textContent = '❌ خطا: ' + error.message;
+          console.error(error);
+        } else {
+          status.textContent = '✅ ثبت موفق! شناسه: ' + data[0].id;
+          console.log('Inserted:', data);
+          form.reset();
+        }
+      } catch (err) {
+        status.textContent = '⛔ خطای کلی: ' + err.message;
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
