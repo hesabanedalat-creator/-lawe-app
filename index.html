@@ -1,82 +1,89 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>ثبت نام در سامانه Lawe.ir</title>
+  <title>ثبت‌نام در سامانه Lawe.ir</title>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #f5f5f5;
-      padding: 20px;
+      background-color: #f1f3f6;
       margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
     }
     .container {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 100%;
+      width: 92%;
       max-width: 400px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 25px;
     }
     h2 {
       text-align: center;
-      color: #222;
+      color: #333;
+      margin-bottom: 20px;
     }
     label {
       display: block;
-      margin-top: 12px;
-      margin-bottom: 4px;
+      margin-top: 10px;
       font-weight: 600;
+      color: #222;
     }
-    input, select, button {
+    input, select {
       width: 100%;
       padding: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      box-sizing: border-box;
+      margin-top: 4px;
     }
     button {
+      width: 100%;
+      margin-top: 15px;
       background-color: #007bff;
       color: white;
-      margin-top: 15px;
       font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
       cursor: pointer;
+      font-size: 15px;
     }
-    button:hover {
-      background-color: #0056b3;
-    }
+    button:hover { background-color: #005dc8; }
     #message {
       text-align: center;
-      margin-top: 15px;
+      margin-top: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>فرم ثبت‌نام Lawe.ir</h2>
+    <h2>فرم ثبت‌نام کاربر در Lawe.ir</h2>
     <form id="signupForm">
-      <label for="name">نام:</label>
-      <input type="text" id="name" placeholder="نام کامل" required />
+      <label for="name">نام</label>
+      <input type="text" id="name" required placeholder="نام کامل" />
 
-      <label for="email">ایمیل:</label>
-      <input type="email" id="email" placeholder="example@email.com" required />
+      <label for="email">ایمیل</label>
+      <input type="email" id="email" required placeholder="example@email.com" />
 
-      <label for="password">رمز عبور:</label>
-      <input type="password" id="password" placeholder="رمز عبور" required />
+      <label for="password">رمز عبور</label>
+      <input type="password" id="password" required placeholder="رمز عبور" />
 
-      <label for="language">زبان مورد نظر:</label>
+      <label for="language">زبان</label>
       <select id="language">
         <option value="fa">فارسی</option>
         <option value="en">English</option>
         <option value="ar">العربية</option>
       </select>
 
-      <label for="currency">واحد پول:</label>
+      <label for="currency">واحد پول</label>
       <select id="currency">
         <option value="IRR">﷼ ریال</option>
         <option value="USD">$ دلار</option>
@@ -84,24 +91,22 @@
       </select>
 
       <button type="submit">ثبت‌نام</button>
-      <div id="message"></div>
     </form>
+    <div id="message"></div>
   </div>
 
-  <!-- اتصال Supabase -->
-  <script src="https://esm.sh/@supabase/supabase-js@2"></script>
+  <!-- نسخه ساده و سازگار Supabase -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2.45.2/dist/umd/supabase.min.js"></script>
   <script>
-    // آدرس و کلید پروژه‌ت در Supabase
-    const SUPABASE_URL = 'https://exwuvdwyavvxueadmjok.supabase.co';
-    const SUPABASE_ANON_KEY = '🔑 اینجا کلید anon خودت از داشبورد Supabase بذار';
+    const SUPABASE_URL = "https://exwuvdwyavvxueadmjok.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI";
 
-    const { createClient } = supabase;
-    const client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    async function signupUser(event) {
+    document.getElementById('signupForm').addEventListener('submit', async (event) => {
       event.preventDefault();
-      const message = document.getElementById('message');
-      message.textContent = 'در حال ارسال...';
+      const msg = document.getElementById('message');
+      msg.textContent = 'در حال ارسال...';
 
       const name = document.getElementById('name').value.trim();
       const email = document.getElementById('email').value.trim();
@@ -112,103 +117,22 @@
       try {
         const { data, error } = await client
           .from('app_users')
-          .insert([
-            { name, email, password, language_preference: language, currency_preference: currency },
-          ]);
+          .insert([{ name, email, password, language_preference: language, currency_preference: currency }]);
 
         if (error) {
-          message.textContent = '❌ خطا: ' + error.message;
-          console.error(error);
+          msg.textContent = '❌ خطا در ثبت‌نام: ' + error.message;
+          console.error('Error:', error);
         } else {
-          message.textContent = '✅ ثبت‌نام موفقیت‌آمیز بود!';
-          console.log('DATA:', data);
+          msg.textContent = '✅ ثبت‌نام با موفقیت انجام شد!';
+          console.log('Inserted:', data);
           document.getElementById('signupForm').reset();
         }
       } catch (err) {
-        message.textContent = '⛔ خطا در درخواست: ' + err.message;
-        console.error(err);
+        msg.textContent = '⛔ خطا در ارتباط: ' + err.message;
+        console.error('Exception:', err);
       }
-    }
-
-    document.getElementById('signupForm').addEventListener('submit', signupUser);
+    });
   </script>
 </body>
-</html>
-
-      const message = document.getElementById('message');
-      if (error) {
-        message.textContent = '❌ خطا در ثبت‌نام: ' + error.message;
-      } else {
-        message.textContent = '✅ ثبت‌نام با موفقیت انجام شد!';
-        document.getElementById('signupForm').reset();
-      }
-    }
-
-    window.signupUser = signupUser;
-  </script>
-
-  <style>
-    body {
-      font-family: sans-serif;
-      background: #f3f4f6;
-      color: #333;
-      text-align: center;
-      margin: 40px auto;
-    }
-
-    form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      display: inline-block;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 300px;
-    }
-
-    input, select {
-      display: block;
-      margin: 10px auto;
-      padding: 8px;
-      width: 90%;
-    }
-
-    button {
-      background: #0077cc;
-      color: #fff;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    #message { margin-top: 15px; font-size: 14px; }
-  </style>
-</head>
-
-<body>
-  <h1>ثبت‌نام در LAW‑E</h1>
-  <form id="signupForm" onsubmit="signupUser(event)">
-    <input id="name" type="text" placeholder="نام" required />
-    <input id="email" type="email" placeholder="ایمیل" required />
-    <input id="password" type="password" placeholder="رمز عبور" required />
-
-    <select id="language">
-      <option value="fa">فارسی</option>
-      <option value="en">English</option>
-      <option value="ar">العربية</option>
-      <option value="tr">Türkçe</option>
-    </select>
-
-    <select id="currency">
-      <option value="IRR">ریال ایران (IRR)</option>
-      <option value="USD">دلار آمریکا (USD)</option>
-      <option value="EUR">یورو (EUR)</option>
-      <option value="AED">درهم امارات (AED)</option>
-      <option value="TRY">لیر ترکیه (TRY)</option>
-    </select>
-
-    <button type="submit">ثبت‌نام</button>
-  </form>
-  <p id="message"></p>
-</body>
-</html>
+  </html>
+  
