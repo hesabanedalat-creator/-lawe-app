@@ -1,23 +1,31 @@
-<script src="https://unpkg.com/@supabase/supabase-js@2.45.2/dist/umd/supabase.min.js"></script>
-<script>
-const SUPABASE_URL = "https://exwuvdwyavvxueadmjok.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI";
-const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>در حال انتقال...</title>
 
-async function checkConn() {
-  const out = document.createElement('div');
-  out.style.cssText = 'text-align:center; margin-top:20px; font-weight:bold;';
-  out.textContent = 'در حال تست ارتباط با Supabase...';
-  document.body.appendChild(out);
+  <!-- ریدایرکت فوری به home.html -->
+  <meta http-equiv="refresh" content="0; url=home.html">
 
-  try {
-    const { data, error } = await client.from('app_users').select('*').limit(1);
-    if (error) { out.textContent = '❌ خطا در ارتباط: ' + error.message; console.error(error); }
-    else { out.textContent = '✅ ارتباط موفق، رکوردها: ' + data.length; console.log('Connected data:', data); }
-  } catch (err) {
-    out.textContent = '⛔ خطای کلی: ' + err.message;
-    console.error(err);
-  }
-}
-checkConn();
-</script>
+  <!-- همچنین جاوااسکریپت برای مرورگرهایی که meta-refresh کار نمی‌کنن -->
+  <script>
+    window.location.href = "home.html";
+  </script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 40px;
+      direction: rtl;
+    }
+  </style>
+</head>
+<body>
+  <h3>در حال انتقال به صفحه اصلی...</h3>
+  <p>اگر خودکار منتقل نشدید،
+    <a href="home.html">اینجا لمس کنید</a>.
+  </p>
+</body>
+</html>
