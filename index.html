@@ -133,6 +133,34 @@
       }
     });
   </script>
+  <!-- تست ارتباط ساده با Supabase -->
+<script src="https://unpkg.com/@supabase/supabase-js@2.45.2/dist/umd/supabase.min.js"></script>
+<script>
+  const SUPABASE_URL = "https://exwuvdwyavvxueadmjok.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI";
+
+  const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  async function testConnection() {
+    try {
+      const { data, error } = await client.from('app_users').select('*').limit(1);
+      if (error) {
+        alert('❌ خطا در ارتباط با Supabase: ' + error.message);
+        console.error(error);
+      } else {
+        alert('✅ ارتباط برقرار شد، رکوردها: ' + data.length);
+        console.log('Connected data:', data);
+      }
+    } catch (err) {
+      alert('⛔ خطای کلی: ' + err.message);
+      console.error(err);
+    }
+  }
+
+  // اجرای خودکار تست بعد از بار شدن صفحه
+  testConnection();
+</script>
+
 </body>
   </html>
   
