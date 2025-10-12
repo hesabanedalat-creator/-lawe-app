@@ -2,97 +2,115 @@
 <html lang="fa" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ثبت‌نام Lawe App</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ثبت‌نام | Lawe App</title>
   <style>
     body {
       font-family: sans-serif;
-      background: #fafafa;
+      background: #f8f9fa;
+      margin: 0;
       padding: 20px;
       text-align: center;
     }
     form {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #ddd;
-      max-width: 300px;
-      margin: 0 auto;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: auto;
     }
-    input, select, button {
-      display: block;
-      width: 100%;
-      margin: 10px 0;
+    input {
+      width: 90%;
       padding: 10px;
-      font-size: 15px;
+      margin: 8px auto;
+      display: block;
       border: 1px solid #ccc;
-      border-radius: 5px;
+      border-radius: 6px;
+      font-size: 16px;
     }
     button {
+      width: 95%;
+      padding: 10px;
       background: #007bff;
-      color: #fff;
+      color: white;
       border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      margin-top: 8px;
     }
     #status {
-      margin-top: 15px;
-      font-weight: bold;
+      margin-top: 20px;
+      color: #333;
+      font-size: 15px;
+      text-align: center;
     }
   </style>
 </head>
-
 <body>
-  <h2>فرم ثبت‌نام Lawe</h2>
+
+  <h2>فرم ثبت‌نام</h2>
+
   <form id="signupForm">
-    <input type="text" id="name" placeholder="نام کامل">
-    <input type="email" id="email" placeholder="ایمیل">
-    <select id="language">
-      <option value="fa">فارسی</option>
-      <option value="en">English</option>
-    </select>
-    <select id="currency">
-      <option value="IRR">ریال</option>
-      <option value="USD">دلار</option>
-    </select>
+    <input type="text" id="name" placeholder="نام کامل" required>
+    <input type="email" id="email" placeholder="ایمیل" required>
+    <input type="password" id="password" placeholder="رمز عبور" required>
     <button type="submit">ثبت‌نام</button>
   </form>
-  <div id="status"></div>
 
-  <!-- اتصال به Supabase -->
-  <script src="https://unpkg.com/@supabase/supabase-js@2.45.2/dist/umd/supabase.min.js"></script>
+  <div id="status">وضعیت: آماده برای ثبت‌نام</div>
+
   <script>
+    // ---------------- Supabase init -----------------
     const SUPABASE_URL = "https://exwuvdwyavvxueadmjok.supabase.co";
-    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI";
-
-    const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    const form = document.getElementById('signupForm');
-    const status = document.getElementById('status');
-
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      status.textContent = '⏳ در حال ارسال به Supabase...';
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+    
+    // ساخت اتصال ساده با fetch بدون نیاز به import خارجی
+    async function insertSignupRow(name, email) {
       try {
-        const name = document.getElementById('name').value.trim();
-        const email = document.getElementById('email').value.trim();
-        const language = document.getElementById('language').value;
-        const currency = document.getElementById('currency').value;
-
-        const { data, error } = await client
-          .from('app_users')
-          .insert([{ name, email, language, currency }]);
-
-        if (error) {
-          status.textContent = '❌ خطا: ' + error.message;
-          console.error(error);
-        } else {
-          status.textContent = '✅ ثبت موفق! شناسه: ' + data[0].id;
-          console.log('Inserted:', data);
-          form.reset();
-        }
+        const resp = await fetch(SUPABASE_URL + "/rest/v1/signup", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({ name, email, created_at: new Date().toISOString() })
+        });
+        return resp;
       } catch (err) {
-        status.textContent = '⛔ خطای کلی: ' + err.message;
-        console.error(err);
+        return { error: err.message };
+      }
+    }
+
+    // ---------------- Form submit -----------------
+    const form = document.getElementById("signupForm");
+    const statusDiv = document.getElementById("status");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const pwd = document.getElementById("password").value.trim();
+
+      statusDiv.innerHTML = "⏳ در حال ارسال اطلاعات...";
+
+      // تست اتصال ساده به جدول signup
+      const resp = await insertSignupRow(name, email);
+
+      if (resp && resp.ok) {
+        statusDiv.innerHTML = "✅ ثبت با موفقیت انجام شد!";
+        form.reset();
+      } else if (resp.error) {
+        statusDiv.innerHTML = "⛔ خطا در اتصال: " + resp.error;
+      } else {
+        const errText = await resp.text();
+        statusDiv.innerHTML = "❌ خطا در ثبت: " + errText;
       }
     });
   </script>
+
 </body>
 </html>
