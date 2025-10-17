@@ -1,17 +1,107 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>در حال انتقال...</title>
-  <meta http-equiv="refresh" content="0; url=home.html">
-  <script>window.location.href = "home.html";</script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>فرم ثبت‌نام | AI Business Brain</title>
   <style>
-    body {font-family:sans-serif;text-align:center;padding:40px;direction:rtl;}
+    body {
+      font-family: sans-serif;
+      background-color: #f6f8fa;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h1 {
+      color: #222;
+      margin-bottom: 20px;
+    }
+    form {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 25px;
+      width: 300px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #1e88e5;
+      color: white;
+      font-size: 15px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1565c0;
+    }
   </style>
 </head>
+
 <body>
-  <h3>در حال انتقال به صفحه اصلی...</h3>
-  <p>اگر منتقل نشدید، <a href="home.html">اینجا لمس کنید</a>.</p>
+  <h1>ثبت‌نام کاربر جدید</h1>
+  <form id="signupForm">
+    <input type="text" id="name" placeholder="نام" required />
+    <input type="email" id="email" placeholder="ایمیل" required />
+    <button type="button" id="signup-btn">ارسال اطلاعات</button>
+  </form>
+
+  <script>
+    // 🚀 تنظیمات پروژه Supabase
+    const SUPABASE_URL = "https://exwudwyavvxueadmjok.supabase.co";
+    const SUPABASE_KEY = "🔑 کلید anon public خود را از بخش Project Settings > API قرار دهید";
+
+    async function registerUser(name, email) {
+      try {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/signup`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify({ name, email })
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          alert("❌ خطا در ثبت‌نام: " + errorText);
+          return;
+        }
+
+        alert("✅ ثبت‌نام با موفقیت انجام شد!");
+      } catch (err) {
+        console.error(err);
+        alert("❌ خطای ارتباط با سرور، اتصال اینترنت یا تنظیمات API را بررسی کن.");
+      }
+    }
+
+    // 🎯 فراخوانی تابع هنگام کلیک دکمه
+    document.getElementById("signup-btn").addEventListener("click", function () {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!name || !email) {
+        alert("لطفاً نام و ایمیل را وارد کن.");
+        return;
+      }
+
+      registerUser(name, email);
+    });
+  </script>
 </body>
 </html>
