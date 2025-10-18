@@ -1,72 +1,61 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>فرم ثبت‌نام | AI Business Brain</title>
+  <meta charset="UTF-8">
+  <title>ثبت‌نام در Lawe</title>
   <style>
     body {
       font-family: sans-serif;
-      background-color: #f6f8fa;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    h1 {
-      color: #222;
-      margin-bottom: 20px;
+      background: #f9f9f9;
+      text-align: center;
+      padding: 30px;
     }
     form {
       background: white;
-      border: 1px solid #ddd;
+      padding: 20px;
       border-radius: 10px;
-      padding: 25px;
-      width: 300px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+      display: inline-block;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     input {
-      width: 100%;
-      padding: 8px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 14px;
+      margin: 10px;
+      padding: 10px;
+      width: 250px;
+      font-size: 15px;
     }
     button {
-      width: 100%;
-      padding: 10px;
-      background-color: #1e88e5;
+      background: #0099ff;
       color: white;
-      font-size: 15px;
       border: none;
-      border-radius: 6px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
       cursor: pointer;
-    }
-    button:hover {
-      background-color: #1565c0;
     }
   </style>
 </head>
-
 <body>
-  <h1>ثبت‌نام کاربر جدید</h1>
-  <form id="signupForm">
-    <input type="text" id="name" placeholder="نام" required />
-    <input type="email" id="email" placeholder="ایمیل" required />
-    <button type="button" id="signup-btn">ارسال اطلاعات</button>
+
+  <h2>فرم ثبت‌نام Lawe</h2>
+
+  <form onsubmit="submitForm(event)">
+    <input type="text" id="name" placeholder="نام">
+    <input type="email" id="email" placeholder="ایمیل">
+    <button type="submit">ارسال اطلاعات</button>
   </form>
 
   <script>
-    // 🚀 تنظیمات پروژه Supabase
-    const SUPABASE_URL = "https://exwudwyavvxueadmjok.supabase.co";
-    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI";
+    async function submitForm(event) {
+      event.preventDefault();
 
-    async function registerUser(name, email) {
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      const SUPABASE_URL = "https://exwuvdwyavvxueadmjok.supabase.co";
+      const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4d3V2ZHd5YXZ2eHVlYWRtam9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAwMTIwMjMsImV4cCI6MjA3NTU4ODAyM30.wP87kaMmWxIp_2zar9112hYMWrToXJmSdB744fPxMnI"; // از تنظیمات API
+
       try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/signup`, {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/signup`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -77,31 +66,18 @@
           body: JSON.stringify({ name, email })
         });
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          alert("❌ خطا در ثبت‌نام: " + errorText);
-          return;
+        if (res.ok) {
+          alert("✅ اطلاعات با موفقیت ذخیره شد!");
+        } else {
+          alert("❌ خطا در ارسال داده: " + res.status);
         }
 
-        alert("✅ ثبت‌نام با موفقیت انجام شد!");
       } catch (err) {
+        alert("❌ خطای ارتباط:\n" + err.message);
         console.error(err);
-        alert("❌ خطای ارتباط با سرور، اتصال اینترنت یا تنظیمات API را بررسی کن.");
       }
     }
-
-    // 🎯 فراخوانی تابع هنگام کلیک دکمه
-    document.getElementById("signup-btn").addEventListener("click", function () {
-      const name = document.getElementById("name").value.trim();
-      const email = document.getElementById("email").value.trim();
-
-      if (!name || !email) {
-        alert("لطفاً نام و ایمیل را وارد کن.");
-        return;
-      }
-
-      registerUser(name, email);
-    });
   </script>
+
 </body>
 </html>
